@@ -63,9 +63,10 @@ def get_recordings():
 @app.route("/delete_file")
 def get_recordings():
     logger.debug("delete_file called")
+    args = request.args
 
-    if path := request.args.get("path"):
-        os.remove(path)
+    if args.get("path"):
+        os.remove(args.get("path"))
         return "success"
 
     return "fail"
