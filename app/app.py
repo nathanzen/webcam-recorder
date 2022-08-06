@@ -61,7 +61,7 @@ def get_recordings():
 
 
 @app.route("/delete_file")
-def get_recordings():
+def delete_file():
     logger.debug("delete_file called")
     args = request.args
 
