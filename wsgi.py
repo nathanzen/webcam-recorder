@@ -3,7 +3,14 @@ from flask import Flask, send_from_directory, request
 from webcam_recorder import WebcamRecorder
 
 app = Flask(__name__)
-wcd_rec = WebcamRecorder()
+wcd_rec = WebcamRecorder(users=[
+    "ohbabyy_"
+])
+
+
+@app.route("/get_users")
+def get_users():
+    return wcd_rec.get_users()
 
 
 @app.route("/get_recordings")

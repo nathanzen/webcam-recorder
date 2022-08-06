@@ -9,7 +9,9 @@ from logging.handlers import SysLogHandler
 class WebcamRecorder:
     LINK = "https://github.com/WebcamDownloader/WebcamDownloader/releases/download/v0.4.4/WebcamDownloaderLinux_18.04_cli"
 
-    def __init__(self):
+    def __init__(self, users: list[str]):
+        self.users = users
+
         self.app_name = f"{self.__class__.__name__}_{''.join(random.choice(string.ascii_letters) for _ in range(5))}"
 
         syslog = SysLogHandler(address=('logs5.papertrailapp.com', 29534))
@@ -34,7 +36,7 @@ class WebcamRecorder:
 
         os.system(f"{executable_file} settings download-dir {self.download_dir}")
 
-        for user in ["ohbabyy_"]:
+        for user in users:
             os.system(f"{executable_file} add stripchat {user} --autodownload")
 
         os.system(f"{executable_file} download &")
@@ -49,6 +51,11 @@ class WebcamRecorder:
             "size": os.path.getsize(os.path.join(self.download_dir, file_name))
         } for file_name in os.listdir(self.download_dir)
             if os.path.isfile(os.path.join(self.download_dir, file_name))]
+
+    def get_users(self):
+        self.logger.debug("get_users called")
+
+        return self.users
 
     @staticmethod
     def delete_file(path):
