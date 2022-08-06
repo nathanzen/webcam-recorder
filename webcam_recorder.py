@@ -9,7 +9,7 @@ from logging.handlers import SysLogHandler
 class WebcamRecorder:
     LINK = "https://github.com/WebcamDownloader/WebcamDownloader/releases/download/v0.4.4/WebcamDownloaderLinux_18.04_cli"
 
-    def __init__(self, users: list[str]):
+    def __init__(self, users):
         self.users = users
 
         self.app_name = f"{self.__class__.__name__}_{''.join(random.choice(string.ascii_letters) for _ in range(5))}"
