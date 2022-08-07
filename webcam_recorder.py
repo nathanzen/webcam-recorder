@@ -42,8 +42,6 @@ class WebcamRecorder:
         os.system(f"{executable_file} download &")
 
     def get_files(self):
-        self.logger.debug("get_recordings called")
-
         return [{
             "name": file_name,
             "path": os.path.join(self.download_dir, file_name),
@@ -53,10 +51,12 @@ class WebcamRecorder:
             if os.path.isfile(os.path.join(self.download_dir, file_name))]
 
     def get_users(self):
-        self.logger.debug("get_users called")
-
         return self.users
 
-    @staticmethod
-    def delete_file(path):
-        os.remove(path)
+    def delete_file(self, path):
+        self.logger.debug(f"Deleting file: {path}")
+        if os.path.exists(path):
+            os.remove(path)
+        else:
+            self.logger.debug(f"File {path} doesn't exists.")
+
