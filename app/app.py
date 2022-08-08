@@ -1,6 +1,9 @@
 from flask import Flask, send_from_directory, request
 
 from webcam_recorder import WebcamRecorder
+from datetime import datetime
+import requests
+
 
 app = Flask(__name__)
 wcd_rec = WebcamRecorder(users=["ohbabyy_"])
@@ -32,13 +35,31 @@ def download_file():
     args = request.args
 
     if (not args.get("dir")) and (not args.get("name")):
-        return "missing parameters"
+        return {"message": "missing parameters"}
 
     try:
         wcd_rec.logger.debug(f"Uploading {args['name']} to client...")
         return send_from_directory(directory=args["dir"], path=args["name"], as_attachment=True)
     except Exception as e:
         return {"message": f"{e}"}
+
+
+@app.route('/keep_me_alive')
+def download_file():
+    args = request.args
+
+    url_1 = args.get("a")
+    url_2 = args.get("b")
+
+    if (not url_1) and (not url_2):
+        return {"message": "missing parameters"}
+
+    if datetime.now().day < 15:
+        requests.head(url_1)
+        return {"message": "success", "url": url_1}
+    else:
+        requests.head(url_2)
+        return {"message": "success", "url": url_2}
 
 
 @app.route("/")
