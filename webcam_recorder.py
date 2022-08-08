@@ -57,6 +57,12 @@ class WebcamRecorder:
         self.logger.debug(f"Deleting file: {path}")
         if os.path.exists(path):
             os.remove(path)
+
+            if not os.path.exists(path):
+                self.logger.debug("delete success")
+            else:
+                self.logger.debug("delete fail")
+
         else:
             self.logger.debug(f"File {path} doesn't exists.")
 
