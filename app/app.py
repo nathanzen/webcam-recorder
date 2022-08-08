@@ -45,7 +45,7 @@ def download_file():
 
 
 @app.route('/keep_me_alive')
-def download_file():
+def keep_me_alive():
     args = request.args
 
     url_1 = args.get("a")
