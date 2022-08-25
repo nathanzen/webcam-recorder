@@ -14,9 +14,9 @@ class WebcamRecorder:
 
         self.app_name = f"{self.__class__.__name__}_{''.join(random.choice(string.ascii_letters) for _ in range(5))}"
 
+        log_format = f"%(levelname)s = {self.app_name}: [%(filename)s:%(lineno)s - %(funcName)20s()] %(message)s"
         syslog = SysLogHandler(address=('logs5.papertrailapp.com', 29534))
-        syslog.setFormatter(Formatter(f"{self.app_name}: [%(filename)s:%(lineno)s - %(funcName)20s()] %(message)s",
-                                      datefmt='%b %d %H:%M:%S'))
+        syslog.setFormatter(Formatter(log_format, datefmt='%b %d %H:%M:%S'))
 
         logger = logging.getLogger(__name__)
         logger.setLevel(logging.DEBUG)
@@ -42,19 +42,25 @@ class WebcamRecorder:
         os.system(f"{executable_file} download &")
 
     def get_files(self):
-        return [{
-            "name": file_name,
-            "path": os.path.join(self.download_dir, file_name),
-            "dir": self.download_dir,
-            "size": os.path.getsize(os.path.join(self.download_dir, file_name))
-        } for file_name in os.listdir(self.download_dir)
-            if os.path.isfile(os.path.join(self.download_dir, file_name))]
+        files = []
+
+        for file_name in os.listdir(self.download_dir):
+            if os.path.isfile(os.path.join(self.download_dir, file_name)):
+                files.append({
+                    "name": file_name,
+                    "path": os.path.join(self.download_dir, file_name),
+                    "dir": self.download_dir,
+                    "size": os.path.getsize(os.path.join(self.download_dir, file_name))
+                })
+
+        return files
 
     def get_users(self):
         return self.users
 
     def delete_file(self, path):
         self.logger.debug(f"Deleting file: {path}")
+
         if os.path.exists(path):
             os.remove(path)
 
@@ -62,7 +68,5 @@ class WebcamRecorder:
                 self.logger.debug("delete success")
             else:
                 self.logger.debug("delete fail")
-
         else:
             self.logger.debug(f"File {path} doesn't exists.")
-

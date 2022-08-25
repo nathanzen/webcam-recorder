@@ -1,9 +1,10 @@
+import calendar
+from datetime import datetime
+
+import requests
 from flask import Flask, send_from_directory, request
 
 from webcam_recorder import WebcamRecorder
-from datetime import datetime
-import requests
-
 
 app = Flask(__name__)
 wcd_rec = WebcamRecorder(users=["ohbabyy_"])
@@ -34,32 +35,27 @@ def delete_file():
 def download_file():
     args = request.args
 
-    if (not args.get("dir")) and (not args.get("name")):
-        return {"message": "missing parameters"}
+    if (directory := args.get("dir")) and (name := args.get("name")):
+        try:
+            wcd_rec.logger.debug(f"Uploading {name} to client...")
+            return send_from_directory(directory=directory, path=name, as_attachment=True)
+        except Exception as e:
+            return {"message": f"{e}"}
 
-    try:
-        wcd_rec.logger.debug(f"Uploading {args['name']} to client...")
-        return send_from_directory(directory=args["dir"], path=args["name"], as_attachment=True)
-    except Exception as e:
-        return {"message": f"{e}"}
+    return {"message": "missing parameters"}
 
 
 @app.route('/keep_me_alive')
 def keep_me_alive():
     args = request.args
 
-    url_1 = args.get("a")
-    url_2 = args.get("b")
+    if (url1 := args.get("a")) and (url2 := args.get("a")):
+        now = datetime.now()
+        url = url1 if calendar.monthrange(now.year, now.month)[1] // 2 > now.day else url2
+        requests.head(url)
+        return {"message": "success", "url": url}
 
-    if (not url_1) and (not url_2):
-        return {"message": "missing parameters"}
-
-    if datetime.now().day < 15:
-        requests.head(url_1)
-        return {"message": "success", "url": url_1}
-    else:
-        requests.head(url_2)
-        return {"message": "success", "url": url_2}
+    return {"message": "missing parameters"}
 
 
 @app.route("/")
