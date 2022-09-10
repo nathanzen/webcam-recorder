@@ -34,8 +34,11 @@ def delete_file():
 @app.route('/download_file')
 def download_file():
     args = request.args
-
-    if (directory := args.get("dir")) and (name := args.get("name")):
+    
+    directory = args.get("dir")
+    name = args.get("name")
+    
+    if directory and name:
         try:
             wcd_rec.logger.debug(f"Uploading {name} to client...")
             return send_from_directory(directory=directory, path=name, as_attachment=True)
@@ -48,8 +51,11 @@ def download_file():
 @app.route('/keep_me_alive')
 def keep_me_alive():
     args = request.args
-
-    if (url1 := args.get("a")) and (url2 := args.get("a")):
+    
+    url1 = args.get("a")
+    url2 = args.get("b")
+    
+    if url1 and url2:
         now = datetime.now()
         url = url1 if calendar.monthrange(now.year, now.month)[1] // 2 > now.day else url2
         requests.head(url)
